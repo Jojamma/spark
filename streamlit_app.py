@@ -116,7 +116,7 @@ else:
                     if code_input:
                         try:
                             # Send the user's code to the Flask API running on Google Colab
-                            colab_url = 'https://http://127.0.0.1:5000/execute'  # Replace with your ngrok URL from Colab
+                            colab_url = 'http://http://127.0.0.1:5000.ngrok.io/execute'  # Replace with your ngrok URL from Colab
                             response = requests.post(colab_url, json={"code": code_input})
 
                             if response.status_code == 200:
