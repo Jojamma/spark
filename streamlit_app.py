@@ -4,6 +4,7 @@ import sqlite3
 import hashlib
 from datetime import datetime
 import time
+import requests  # Import requests for making HTTP calls
 
 # Database initialization
 conn = sqlite3.connect("user_data.db", check_same_thread=False)
@@ -112,12 +113,21 @@ else:
                 code_input = st.text_area("Write your Python code here:", height=200)
 
                 if st.button("Run Code"):
-                    try:
-                        # Execute the user's code in a safe environment (consider using exec with caution)
-                        exec(code_input)
-                        st.success("Code executed successfully!")
-                    except Exception as e:
-                        st.error(f"Error executing code: {e}")
+                    if code_input:
+                        try:
+                            # Send the user's code to the Flask API running on Google Colab
+                            colab_url = 'https://http://127.0.0.1:5000/execute'  # Replace with your ngrok URL from Colab
+                            response = requests.post(colab_url, json={"code": code_input})
+
+                            if response.status_code == 200:
+                                result_output = response.json().get('output', '')
+                                st.success("Code executed successfully!")
+                                st.text_area("Output", result_output, height=300)
+                            else:
+                                error_message = response.json().get('error', 'Unknown error occurred.')
+                                st.error(f"Error executing code: {error_message}")
+                        except Exception as e:
+                            st.error(f"Failed to connect to server: {e}")
 
             model_type = st.selectbox("Select Model Type:", ["Transformer", "CNN", "RNN", "ANN"])
             core_option = st.selectbox("Select Core Option:", ["CPU", "GPU", "HDFS"])
