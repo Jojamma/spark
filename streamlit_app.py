@@ -81,14 +81,14 @@ else:
     if st.session_state.is_admin:
         st.title("Admin Dashboard")
         st.write("Admin Dashboard: View all user logs.")
+
         logs_placeholder = st.empty()
 
         while True:
-            logs_df = pd.read_sql("SELECT * FROM logs ORDER BY timestamp DESC", conn)
+            logs_df = pd.read_sql(
+                "SELECT username, dataset_name, dataset_size, model, cpu, gpu, hdfs, timestamp FROM logs ORDER BY timestamp DESC", conn
+            )
             if not logs_df.empty:
-                if 'id' in logs_df.columns:
-                    logs_df.drop(columns=["id"], inplace=True)
-                logs_df.drop(columns=["id"], inplace=True)
                 logs_df.set_index("timestamp", inplace=True)
                 logs_placeholder.dataframe(logs_df)
 
@@ -107,7 +107,7 @@ else:
                 dataset = pd.read_csv(uploaded_file)
                 st.write("### Dataset Columns")
                 st.write(dataset.columns.tolist())
-            
+
             model_type = st.selectbox("Select Model Type:", ["Transformer", "CNN", "RNN", "ANN"])
             core_option = st.selectbox("Select Core Option:", ["CPU", "GPU", "HDFS"])
 
@@ -130,9 +130,10 @@ else:
 
         elif page == "Log Page":
             st.title("Log Page")
-            logs_df = pd.read_sql("SELECT * FROM logs WHERE username = ? ORDER BY timestamp DESC", conn, params=(st.session_state.username,))
+            logs_df = pd.read_sql(
+                "SELECT dataset_name, dataset_size, model, cpu, gpu, hdfs, timestamp FROM logs WHERE username = ? ORDER BY timestamp DESC",
+                conn, params=(st.session_state.username,))
             if not logs_df.empty:
-                logs_df.drop(columns=["id"], inplace=True)
                 logs_df.set_index("timestamp", inplace=True)
                 st.dataframe(logs_df)
 
