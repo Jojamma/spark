@@ -108,6 +108,17 @@ else:
                 st.write("### Dataset Columns")
                 st.write(dataset.columns.tolist())
 
+                # Text area for custom Python code input
+                code_input = st.text_area("Write your Python code here:", height=200)
+
+                if st.button("Run Code"):
+                    try:
+                        # Execute the user's code in a safe environment (consider using exec with caution)
+                        exec(code_input)
+                        st.success("Code executed successfully!")
+                    except Exception as e:
+                        st.error(f"Error executing code: {e}")
+
             model_type = st.selectbox("Select Model Type:", ["Transformer", "CNN", "RNN", "ANN"])
             core_option = st.selectbox("Select Core Option:", ["CPU", "GPU", "HDFS"])
 
